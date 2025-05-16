@@ -66,7 +66,7 @@ if (stripos($_SERVER['REQUEST_URI'], 'delete_book') !== false) {
 		sql("DELETE FROM users_books WHERE ubo_user = '". login() ."' AND ubo_id = '". g_arg(0) ."'");
 		@unlink(FILESYSTEM .'/files/'. $row->ubo_file_name);	
 		
-		success('Book deleted');
+		success(ui_lang('book_deleted', 'Book deleted'));
 		
 		location('/lexlector/');	
 	}
@@ -127,10 +127,9 @@ print '<div id="editPopup" class="popup hidden">
 	  <label>'. ui_lang('author', 'Author') .': <input type="text" name="author" id="editAuthor"></label><br>
 	  <label>'. ui_lang('year', 'Year') .': <input type="number" name="year" id="editYear"></label><br>
 	  <label>'. ui_lang('lang', 'Lang') .': 
-		<select name="lang" id="editLang" class="mb10">
-		  <option value="cs">CS</option>
-		  <option value="en">EN</option>
-		</select>
+		<select name="lang" id="editLang" class="mb10">';
+foreach($LANG_LIST as $lang) print '<option value="'. $lang .'">'. strtoupper($lang) .'</option>';
+print '</select>
 	  </label><br>
 	  <button type="submit">'. ui_lang('save', 'Save') .'</button>
 	  <button type="button" onclick="closePopup()">'. ui_lang('close', 'Close') .'</button>

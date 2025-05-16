@@ -2,6 +2,7 @@
 $TITLE = 'Reader';
 
 $author = $text = $name = '';
+$lang = 'en';
 
 if (isset($_FILES['book_file'])) {
 	$file = $_FILES['book_file'];
@@ -26,11 +27,12 @@ if (isset($_FILES['book_file'])) {
 } elseif (login() && g_arg(0)){
 	$id = (int) g_arg(0);
 	
-	$res = sql("SELECT ubo_author, ubo_custom_name, ubo_text FROM users_books WHERE ubo_user = '". login() ."' AND ubo_id = '". $id ."'");
+	$res = sql("SELECT ubo_author, ubo_custom_name, ubo_text, ubo_lang FROM users_books WHERE ubo_user = '". login() ."' AND ubo_id = '". $id ."'");
 	if ($row = sql_obj($res)) {
 		$name = $row->ubo_custom_name;
 		$author = $row->ubo_author;
 		$text = $row->ubo_text;
+		$lang = $row->ubo_lang;
 		
 		sql("UPDATE users_books SET ubo_read_dt = NOW() WHERE ubo_id = '". $id ."'");
 	} else location('/lexlector/');
@@ -42,7 +44,11 @@ $_text = str_replace("\n", '<br />', $text);
 print '<div class="reader_wrapper" id="reader_wrapper">
     <div class="reader_header">
       <div class="reader_info">
-        <a href="/lexlector/" class="color_white no_decoration">««</a> <strong>'. ui_lang('name', 'Name') .':</strong> '. $name . ($author ? '&nbsp;&nbsp;|&nbsp;&nbsp;<strong>'. ui_lang('author', 'Author') .':</strong> '. $author : '') .'</div>
+		<a href="/lexlector/" class="color_white no_decoration">««</a> 
+		<select id="document_lang">';
+foreach($LANG_LIST as $_lang) print '<option value="'. $_lang .'"'. ($lang == $_lang ? ' selected' : '') .'>'. strtoupper($_lang) .'</option>';
+print '</select> 
+		<strong>'. ui_lang('name', 'Name') .':</strong> '. $name . ($author ? '&nbsp;&nbsp;|&nbsp;&nbsp;<strong>'. ui_lang('author', 'Author') .':</strong> '. $author : '') .'</div>
     </div>
     <div class="reader_body">';
 print $_text;
@@ -108,9 +114,11 @@ document.addEventListener("DOMContentLoaded", () => {
     popup.style.top = y + "px";
     popup.innerHTML = '<span class="popup_translation">'+ translating +'</span><span class="popup_icon" title="'+ whole_sentence +'" style="float: right; cursor: pointer;">📖</span>';
     popup.style.display = "block";
+	
+	const lang_from = id("document_lang").value;
 
     ajicek2({
-      'ajicek': 'translate/' + encodeURIComponent(word) + '/en/' + lang_to,
+      'ajicek': 'translate/' + encodeURIComponent(word) + '/'+ lang_from +'/' + lang_to,
       'success': function (data) {
         popup.querySelector(".popup_translation").textContent = data.data;
       }
@@ -122,7 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
       popup.querySelector(".popup_translation").textContent = translating;
 
       ajicek2({
-        'ajicek': 'translate/' + encodeURIComponent(sentence) + '/en/' + lang_to,
+        'ajicek': 'translate/' + encodeURIComponent(sentence) + '/'+ lang_from +'/' + lang_to,
         'success': function (data) {
           popup.querySelector(".popup_translation").textContent = data.data;
         }

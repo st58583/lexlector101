@@ -269,3 +269,4 @@ fieldset input {flex-grow: 1; padding: 10px; border-radius: 5px; border: 1px sol
 fieldset button {background: #E36054; color: #fff; font-weight: bold; border-radius: 5px; border: 1px solid #000; padding: 10px 20px; cursor: pointer;}
 fieldset p {font-size: 10pt; color: #ccc; margin-top: 8px;}
 fieldset div {display: flex; flex-wrap: wrap; gap: 10px; align-items: center;}
+select#document_lang {margin: 0 10px; padding: 3px; border-radius: 5px; font-size: 10pt;}

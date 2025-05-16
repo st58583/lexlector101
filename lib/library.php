@@ -862,16 +862,15 @@ function gpt_post_translate($word, $from = 'en', $to = 'cs') {
 }
 
 function language_selection(){
-	global $UI_LANG;
+	global $UI_LANG, $LANG_LIST;
 	
 	$lang = 'en';
-	$lang_list = array('en', 'cs');
 	
 	if (isset($_SESSION['lang'])) $lang = $_SESSION['lang'];
 	else $_SESSION['lang'] = $lang;
 	
 	if (stripos($_SERVER['REQUEST_URI'], 'change_language') !== false){
-		if (in_array(g_arg(0), $lang_list)) $_SESSION['lang'] = g_arg(0);
+		if (in_array(g_arg(0), $LANG_LIST)) $_SESSION['lang'] = g_arg(0);
 		if (login()) sql("UPDATE users SET usr_lang = '". $_SESSION['lang'] ."' WHERE usr_id = '". login() ."'");
 		
 		location('/lexlector/');
@@ -881,7 +880,7 @@ function language_selection(){
 	while ($row = sql_obj($res)) $UI_LANG[$row->uit_key] = $row->uit_text;
 	
 	$ret = '<select id="language_selector" style="background: #fff; border-radius: 5px; padding: 5px; font-size: 10pt;">';
-	foreach ($lang_list as $lang) $ret .= '<option value="'. $lang .'"'. ($lang == $_SESSION['lang'] ? ' selected' : '') .'>'. strtoupper($lang) .'</option>';
+	foreach ($LANG_LIST as $lang) $ret .= '<option value="'. $lang .'"'. ($lang == $_SESSION['lang'] ? ' selected' : '') .'>'. strtoupper($lang) .'</option>';
 	$ret.= '</select>';
 	
 	return $ret;
@@ -891,5 +890,13 @@ function ui_lang($key, $default = ''){
 	global $UI_LANG;
 	
 	return (isset($UI_LANG[$key])) ? $UI_LANG[$key] : $default;
+}
+
+/*function clean_word($word) {
+    return preg_replace('/^[^a-zA-Z0-9ěščřžýáíúů]+|[^a-zA-Z0-9ěščřžýáíúů]+$/u', '', $word);
+}*/
+
+function clean_word($word) {
+    return preg_replace('/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/u', '', $word);
 }
 ?>
