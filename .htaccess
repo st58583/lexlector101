@@ -1,0 +1,6 @@
+RewriteEngine On
+RewriteRule ^([^.]+)?$ index.php?page=$1 [L]
+RewriteCond %{HTTP_REFERER} !^http://localhost/lexlector/.*$ [NC]
+RewriteCond %{HTTP_REFERER} !^$
+
+ErrorDocument 404 http://localhost/lexlector/error/404/
